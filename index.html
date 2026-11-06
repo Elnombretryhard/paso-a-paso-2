@@ -1,0 +1,1324 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Paso a Paso</title>
+<meta name="description" content="Convierte tus objetivos en pasos pequeños y alcanzables, uno a la vez.">
+<meta name="theme-color" content="#000000">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Paso a Paso">
+<script>try{var t0=localStorage.getItem("pasos-theme");document.documentElement.setAttribute("data-theme",["yellow","light","green","lilac","custom"].indexOf(t0)>-1?t0:"yellow")}catch(e){document.documentElement.setAttribute("data-theme","yellow")}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap">
+<style>
+/* Paso a Paso — sistema visual (Apple HIG / Liquid Glass)
+   Capas: 1 tokens · 2 temas · 3 base · 4 cristal · 5 componentes · 6 vistas · 7 preferencias */
+
+/* 1 · Tokens */
+:root{--font:-apple-system,BlinkMacSystemFont,"SF Pro Text",Inter,"Segoe UI",system-ui,sans-serif;
+--r:28px;--r-in:calc(var(--r) - 10px);--pill:999px;--ease:cubic-bezier(.22,1,.36,1);--spring:cubic-bezier(.34,1.56,.64,1);
+--c0:color-mix(in srgb,#af52de 11%,var(--card));--c1:color-mix(in srgb,#ff9500 12%,var(--card));--c2:color-mix(in srgb,#0a84ff 11%,var(--card));--c3:color-mix(in srgb,#ff2d55 10%,var(--card));--c4:color-mix(in srgb,#30d158 12%,var(--card));
+--ok:#248a3d;--bad:#d70015;--sh:0 1px 2px rgb(0 0 0/.05),0 8px 24px rgb(0 0 0/.06);--glass-bd:rgb(255 255 255/.5);--glass-hi:rgb(255 255 255/.7)}
+
+/* 2 · Temas (los ids y localStorage se mantienen) */
+:root,:root[data-theme="light"]{color-scheme:light;--bg:#f2f2f7;--card:#fff;--tx:#1d1d1f;--mut:#6e6e73;--bd:rgb(60 60 67/.14);--chip:rgb(120 120 128/.12);--on:#1d1d1f;--nav:#0071e3;--navon:#fff;--navontx:#fff;--ac:#0071e3;--glass:rgb(255 255 255/.6)}
+:root[data-theme="green"]{color-scheme:light;--bg:#f0f6f2;--card:#fff;--tx:#10251c;--mut:#5f7a6c;--bd:rgb(16 60 40/.12);--chip:rgb(20 90 60/.08);--nav:#1f7a3a;--ac:#1f7a3a;--glass:rgb(255 255 255/.6)}
+:root[data-theme="lilac"]{color-scheme:light;--bg:#f4f2fb;--card:#fff;--tx:#1c1633;--mut:#6b6488;--bd:rgb(60 40 120/.12);--chip:rgb(107 79 224/.09);--nav:#6b4fe0;--ac:#6b4fe0;--glass:rgb(255 255 255/.6)}
+:root[data-theme="yellow"]{color-scheme:dark;--bg:#000;--card:#1c1c1e;--tx:#f5f5f7;--mut:#a1a1a6;--bd:rgb(255 255 255/.12);--chip:rgb(120 120 128/.24);--on:#f5f5f7;--nav:#ffd60a;--navon:#1d1d1f;--navontx:#1d1d1f;--ac:#ffd60a;--glass:rgb(44 44 46/.55);--glass-bd:rgb(255 255 255/.14);--glass-hi:rgb(255 255 255/.22);--ok:#30d158;--bad:#ff453a;--sh:0 8px 28px rgb(0 0 0/.55)}
+:root[data-theme="custom"]{--glass-bd:rgb(255 255 255/.3)}
+
+/* 3 · Base */
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;min-height:100svh;background:var(--bg);color:var(--tx);font:400 1.0625rem/1.45 var(--font);-webkit-font-smoothing:antialiased;letter-spacing:-.011em}
+body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(60% 38% at 12% -4%,color-mix(in srgb,var(--ac) 20%,transparent),transparent 70%),radial-gradient(46% 32% at 100% 24%,color-mix(in srgb,var(--ac) 11%,transparent),transparent 70%)}
+button{font:inherit;color:inherit;cursor:pointer;border:0;background:none;-webkit-tap-highlight-color:transparent}
+h1,h2,h3,h4{margin:0;letter-spacing:-.022em;text-wrap:balance}
+p{text-wrap:pretty}
+svg{display:block}
+.skip{position:absolute;left:12px;top:-60px;z-index:200;padding:10px 16px;border-radius:var(--pill);background:var(--card);color:var(--tx);box-shadow:var(--sh)}
+.skip:focus{top:calc(12px + env(safe-area-inset-top,0px))}
+:focus-visible{outline:3px solid color-mix(in srgb,var(--ac) 65%,transparent);outline-offset:3px;border-radius:10px}
+main{width:min(100% - 32px,920px);margin:0 auto;padding:calc(20px + env(safe-area-inset-top,0px)) 0 150px}
+h2{font-size:1.3125rem;font-weight:650;margin:30px 0 12px}
+
+/* 4 · Cristal: solo capa funcional (barra, hojas, avisos, capas) */
+nav,.sheet,.toast,.cel{-webkit-backdrop-filter:blur(26px) saturate(180%);backdrop-filter:blur(26px) saturate(180%);background:var(--glass);box-shadow:inset 0 1px 0 var(--glass-hi),0 0 0 1px var(--glass-bd),0 12px 40px rgb(0 0 0/.16)}
+nav{position:fixed;z-index:20;left:50%;translate:-50% 0;bottom:calc(12px + env(safe-area-inset-bottom,0px));display:flex;gap:2px;padding:6px;border-radius:var(--pill)}
+nav button{display:flex;align-items:center;justify-content:center;gap:7px;height:50px;min-width:56px;padding:0 16px;border-radius:var(--pill);color:var(--mut);font-size:.8125rem;font-weight:600;transition:background .25s var(--ease),color .25s,transform .15s var(--ease)}
+nav button.on{background:var(--chip);color:var(--ac)}
+nav button span{display:none}nav button.on span{display:inline}
+nav svg{width:23px;height:23px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+@media(min-width:900px){body{padding-left:104px}nav{left:20px;translate:0 -50%;top:50%;bottom:auto;flex-direction:column;border-radius:34px}nav button{width:56px;height:56px;padding:0;flex-direction:column;gap:2px;border-radius:24px}nav button span,nav button.on span{display:inline;font-size:.625rem}main{padding-bottom:60px}}
+#modal,.tm{position:fixed;inset:0;z-index:30;background:rgb(0 0 0/.32);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);display:none;align-items:flex-end;justify-content:center}
+#modal.open,.tm{display:flex}
+.tm{z-index:40}
+.sheet{width:100%;max-width:520px;max-height:90svh;overflow:auto;border-radius:34px 34px 0 0;padding:26px 22px calc(24px + env(safe-area-inset-bottom,0px));animation:sheet .45s var(--ease) both}
+@media(min-width:700px){#modal,.tm{align-items:center}.sheet{border-radius:34px}}
+@keyframes sheet{from{opacity:0;translate:0 40px;scale:.97}}
+.sheet h2{margin:0 0 4px;font-size:1.5rem}.sheet p{margin:0 0 14px;color:var(--mut);font-size:.9375rem}
+.toast{position:fixed;z-index:60;left:50%;translate:-50% 0;bottom:calc(92px + env(safe-area-inset-bottom,0px));padding:11px 20px;border-radius:var(--pill);font-weight:600;font-size:.9375rem;animation:tin .45s var(--spring) both}
+@media(min-width:900px){.toast{bottom:32px}}
+@keyframes tin{from{opacity:0;translate:-50% 14px;scale:.92}}
+.cel{position:fixed;inset:0;z-index:50;border-radius:0;display:grid;place-content:center;justify-items:center;text-align:center;gap:14px;padding:28px;overflow:hidden;background:color-mix(in srgb,var(--bg) 82%,transparent);box-shadow:none}
+.cel h2{font-size:2.25rem;margin:0}.cel p,.cel small{margin:0;color:var(--mut)}
+.cel>button:not(.fclose):not(.times button){background:var(--nav);color:var(--navon);padding:15px 30px;border-radius:var(--pill);font-weight:600;margin-top:6px}
+.cel .fclose{color:var(--mut);padding:12px}
+.cf{position:absolute;top:-16px;width:9px;height:14px;border-radius:3px;animation:fall 1.8s ease-in forwards}
+@keyframes fall{to{translate:0 105vh;rotate:540deg}}
+.ftime{font-size:clamp(3.5rem,14vw,5.5rem);font-weight:300;font-variant-numeric:tabular-nums;letter-spacing:-.04em}
+.fexp{max-width:480px;color:var(--tx)!important}
+
+/* 5 · Componentes */
+button:active{scale:.97}
+.times{display:flex;gap:8px;margin-top:8px;justify-content:center}
+.times button{flex:1;min-height:44px;padding:0 14px;border-radius:var(--pill);background:var(--chip);font-weight:600;font-size:.9375rem;transition:background .2s,color .2s}
+.times button.on{background:var(--nav);color:var(--navon)}
+.go,.newb,.hero .cta,.nextc button,.empty button,.gyes{background:var(--nav);color:var(--navon);min-height:50px;border-radius:var(--pill);font-weight:600;padding:0 26px;transition:filter .2s,scale .15s var(--ease)}
+.go{width:100%;margin-top:14px}.go:disabled{opacity:.45}
+.newb{width:100%;margin-bottom:22px}
+@media(hover:hover){.go:hover,.newb:hover,.cta:hover,.gyes:hover{filter:brightness(1.08)}.gc:hover{translate:0 -3px;box-shadow:0 2px 4px rgb(0 0 0/.06),0 18px 40px rgb(0 0 0/.12)}.swp:hover,.ib:hover{background:var(--chip)}}
+.del,.dng{min-height:44px;padding:0 14px;color:var(--mut);font-size:.9375rem}.dng{color:var(--bad);font-weight:600}
+.rb{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;flex:none;background:var(--card);box-shadow:var(--sh)}
+.rb svg,.swp svg,.ib svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.card,.stat,.nextc,.tc,.hero,.dh,.gc,.empty{background:var(--card);border-radius:var(--r);box-shadow:var(--sh)}
+.card{padding:20px;margin-bottom:14px}.card h3{font-size:1rem;font-weight:650;margin-bottom:12px}
+.card p{margin:0 0 12px;color:var(--mut);font-size:.9375rem}
+.pin{width:100%;min-height:50px;padding:0 16px;border:1px solid var(--bd);border-radius:var(--r-in);background:var(--bg);color:var(--tx);font:inherit;transition:border-color .2s,box-shadow .2s}
+.pin:focus-visible{outline:0;border-color:var(--ac);box-shadow:0 0 0 4px color-mix(in srgb,var(--ac) 25%,transparent)}
+.sheet input[type=text]{width:100%;min-height:52px;padding:0 16px;border:1px solid var(--bd);border-radius:var(--r-in);background:color-mix(in srgb,var(--card) 70%,transparent);color:var(--tx);font:inherit}
+.sheet input[type=text]:focus-visible{outline:0;border-color:var(--ac);box-shadow:0 0 0 4px color-mix(in srgb,var(--ac) 25%,transparent)}
+.msg{min-height:1.4em;color:var(--mut);font-size:.875rem;margin-top:8px}
+.chip{display:inline-block;background:var(--chip);color:var(--mut);font-size:.75rem;font-weight:600;padding:4px 11px;border-radius:var(--pill)}
+.chip.od{background:var(--bad);color:#fff}
+.ring{position:absolute;top:16px;right:16px;width:52px;height:52px;color:var(--ac)}
+.ring svg{width:100%;height:100%}.ring span{position:absolute;inset:0;display:grid;place-items:center;font-size:.75rem;font-weight:700;font-variant-numeric:tabular-nums;color:var(--tx)}
+.ring circle:last-child{transition:stroke-dasharray .8s var(--ease)}
+.stepper{display:flex;align-items:center;justify-content:space-between;gap:10px}.stepper button{width:48px;height:48px;border-radius:50%;background:var(--chip);font-size:1.4rem}
+.erow{display:flex;gap:8px;margin-bottom:8px;align-items:center}.erow .pin{flex:1;min-width:0}
+.ib,.swp{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;flex:none;color:var(--mut);transition:background .2s}
+.cust{border-top:1px solid var(--bd);margin-top:10px;padding-top:14px}.cust h3{font-size:1rem}
+.cust small,.duo small,.meta small,.nextc small,.hero small{display:block;color:var(--mut);font-size:.8125rem;margin:12px 0 6px}
+.cols{display:flex;flex-wrap:wrap;gap:12px;align-items:center}.cols button{width:36px;height:36px;border-radius:50%;box-shadow:inset 0 0 0 1px rgb(0 0 0/.12);outline:2px solid transparent;outline-offset:3px}.cols button.on{outline-color:var(--tx)}
+.cols input{width:44px;height:44px;border:0;background:none;padding:0;cursor:pointer}.cust input[type=range]{width:100%;accent-color:var(--ac)}
+.tw{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0 14px}
+.sw{border-radius:var(--r-in);padding:14px;text-align:left;background:var(--chip);font-weight:600;font-size:.9375rem;box-shadow:inset 0 0 0 2px transparent;transition:box-shadow .2s}
+.sw.on{box-shadow:inset 0 0 0 2px var(--ac)}.sw span{display:flex;margin-bottom:10px}.sw span i{width:28px;height:28px;border-radius:50%;box-shadow:0 0 0 2px var(--card),inset 0 0 0 1px rgb(128 128 128/.4);margin-right:-8px}
+
+/* 6 · Vistas */
+.top{display:flex;align-items:flex-end;gap:12px;margin-bottom:22px}
+.top h1{font-size:clamp(2rem,1.5rem + 2vw,2.75rem);font-weight:700;letter-spacing:-.034em;line-height:1.05}
+.date{color:var(--mut);font-size:.9375rem;margin-top:6px;max-width:44ch}.date::first-letter{text-transform:uppercase}
+.week{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-bottom:18px}
+.day{padding:10px 0 9px;border-radius:var(--pill);text-align:center;color:var(--mut);font-size:.75rem;font-weight:500;text-transform:capitalize}
+.day b{display:block;font-size:1.0625rem;color:var(--tx);font-weight:600;margin-top:2px}
+.day i{display:block;width:5px;height:5px;border-radius:50%;margin:0 auto 4px;background:transparent}.day.has i{background:var(--ac)}
+.day.on{background:var(--card);box-shadow:var(--sh)}.day.on b{color:var(--ac)}
+.hero{position:relative;padding:26px;margin-bottom:14px;background:linear-gradient(160deg,color-mix(in srgb,var(--ac) 14%,var(--card)),var(--card) 70%)}
+.hero h3{font-size:clamp(1.75rem,1.3rem + 2vw,2.5rem);font-weight:700;letter-spacing:-.03em;line-height:1.1;margin:2px 0 16px;padding-right:90px}
+.chips{display:flex;gap:8px;margin:0 0 20px;flex-wrap:wrap}.chips span{background:var(--chip);border-radius:var(--pill);padding:6px 14px;font-size:.8125rem;font-weight:600}
+.hero .cta{width:100%}
+.badge{position:absolute;top:22px;right:22px;background:color-mix(in srgb,var(--ok) 15%,transparent);color:var(--ok);padding:6px 12px;border-radius:var(--pill);font-size:.8125rem;font-weight:700}
+.trio{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:14px}
+.tc{padding:18px 8px;text-align:center}.tc b{display:block;font-size:2rem;font-weight:700;letter-spacing:-.03em;font-variant-numeric:tabular-nums}.tc span{color:var(--mut);font-size:.8125rem}
+.pills{cursor:pointer}.ph{display:flex;justify-content:space-between;color:var(--mut);font-size:.875rem;margin-bottom:14px}
+.pg{display:grid;grid-template-columns:repeat(10,1fr);gap:7px}.pg i{height:16px;border-radius:var(--pill);background:var(--chip)}.pg i.f{background:var(--ac)}.pg i.t{box-shadow:0 0 0 3px color-mix(in srgb,var(--ac) 35%,transparent)}
+.duo{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}.duo .card{margin:0;cursor:pointer}
+.duo b,.vh b{font-size:1.75rem;font-weight:700;letter-spacing:-.03em;display:block;margin:2px 0 8px;font-variant-numeric:tabular-nums}.vol{color:var(--ac)}.vol b{color:var(--tx)}
+.vh{display:flex;align-items:baseline;gap:8px;justify-content:space-between}.vh b{margin:0}.vh em{font-style:normal;font-weight:700;font-size:.875rem}.vh span{color:var(--mut);font-size:.875rem}.up{color:var(--ok)}.dn{color:var(--bad)}
+.wbars{display:flex;align-items:flex-end;gap:6px;height:64px}.wbars div{flex:1;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:4px}.wbars i{width:100%;background:var(--ac);border-radius:6px}.wbars span{font-size:.6875rem;color:var(--mut)}
+.meta{cursor:pointer;margin-bottom:6px}.mbar{height:10px;background:var(--chip);border-radius:var(--pill);margin-top:12px;overflow:hidden}.mbar i{display:block;height:100%;background:var(--ac);border-radius:var(--pill);transition:width .8s var(--ease)}
+.nextc{padding:18px 20px;display:flex;gap:14px;align-items:center;justify-content:space-between;margin-bottom:6px}.nextc b{display:block;font-weight:600}.nextc small{margin:0 0 2px}.nextc button{flex:none;min-height:44px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px}
+.gc{position:relative;padding:20px;min-height:176px;display:flex;flex-direction:column;justify-content:space-between;text-align:left;transition:translate .3s var(--ease),box-shadow .3s var(--ease),scale .15s}
+.gc h4{margin:14px 0 4px;font-size:1.1875rem;font-weight:650;line-height:1.2;padding-right:60px}.gc small{color:var(--mut);font-size:.875rem}
+.empty{border:1.5px dashed var(--bd);box-shadow:none;padding:40px 20px;text-align:center;color:var(--mut);background:transparent}.empty button{margin-top:14px}
+.ideas{display:flex;flex-wrap:wrap;gap:8px}.ideas button{background:var(--card);box-shadow:var(--sh);border-radius:var(--pill);min-height:44px;padding:0 18px;font-weight:500;font-size:.9375rem}
+.dh{position:relative;padding:22px;margin-bottom:16px;min-height:150px}.dh h2{font-size:1.75rem;font-weight:700;letter-spacing:-.03em;margin:12px 0 4px;padding-right:96px}.dh .ring{width:78px;height:78px;top:18px;right:18px}.dh .chip.due{margin-left:8px}
+.edb{position:absolute;right:18px;bottom:18px;background:var(--chip);min-height:40px;padding:0 18px;border-radius:var(--pill);font-weight:600;font-size:.9375rem}
+.slab{color:var(--mut);font-weight:600;font-size:.875rem}
+.sdots{display:flex;gap:6px;margin:10px 0 16px}.sdots i{flex:1;height:5px;border-radius:var(--pill);background:var(--chip);transition:background .4s}.sdots i.d{background:var(--ac)}.sdots i.c{background:color-mix(in srgb,var(--ac) 45%,var(--chip))}
+.gstep{display:block;width:100%;position:relative;text-align:left;color:var(--tx);background:var(--card);border-radius:var(--r);padding:30px 24px;box-shadow:var(--sh),0 0 0 1.5px color-mix(in srgb,var(--ac) 40%,transparent),0 24px 60px color-mix(in srgb,var(--ac) 16%,transparent);animation:gin .6s var(--ease) both}
+.gnum{display:grid;place-items:center;width:56px;height:56px;border-radius:50%;background:var(--nav);color:var(--navon);font-size:1.5rem;font-weight:700;margin-bottom:18px}
+.gtx{display:block;font-size:clamp(1.375rem,1.1rem + 1.2vw,1.875rem);font-weight:650;letter-spacing:-.025em;line-height:1.25}.gtx.sm{font-size:1.0625rem;font-weight:400;color:var(--mut);margin-top:10px;letter-spacing:0}
+.gq{display:block;font-size:2.25rem;font-weight:700;letter-spacing:-.03em}
+.ghint{display:block;margin-top:20px;color:var(--mut);font-size:.875rem}.gmsg{font-size:1.125rem;line-height:1.5;margin:12px 0 0}
+.gload{display:block;height:14px;border-radius:var(--pill);margin:10px 0;background:linear-gradient(90deg,var(--chip),var(--bd),var(--chip));background-size:200% 100%;animation:shim 1.3s linear infinite}
+.gcount{display:block;font-size:3.5rem;font-weight:300;font-variant-numeric:tabular-nums;letter-spacing:-.04em;margin:6px 0}
+.gbtns{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}.gbtns button{min-height:54px;border-radius:var(--pill);font-weight:600;animation:gup .5s var(--ease) both}.gbtns button:nth-child(2){animation-delay:.07s}.gbtns button:nth-child(3){animation-delay:.14s}
+.gno{background:var(--chip);color:var(--tx)}.gsn{grid-column:1/-1;background:var(--card);color:var(--tx);box-shadow:var(--sh)}
+.gstep.ok{animation:gok .45s var(--ease) both}.gstep.ok>*{opacity:0;transition:opacity .2s}
+.gstep.ok::after{content:"";position:absolute;inset:0;margin:auto;width:72px;height:72px;background:var(--ac);-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 13l4 4L19 7'/%3E%3C/svg%3E") center/contain no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 13l4 4L19 7'/%3E%3C/svg%3E") center/contain no-repeat}
+@keyframes gin{from{opacity:0;translate:0 24px;scale:.96}}@keyframes gup{from{opacity:0;translate:0 14px}}@keyframes gok{40%{scale:1.03}to{scale:.97}}@keyframes shim{to{background-position:-200% 0}}
+ol{list-style:none;margin:0;padding:0}
+li{display:flex;gap:12px;align-items:flex-start;padding:14px 8px;border-top:1px solid var(--bd);border-radius:0}li:first-child{border-top:0}
+li input{appearance:none;-webkit-appearance:none;flex:none;width:26px;height:26px;margin:0;border-radius:50%;border:2px solid color-mix(in srgb,var(--mut) 60%,transparent);display:grid;place-items:center;cursor:pointer;transition:background .25s var(--ease),border-color .25s,scale .25s var(--spring)}
+li input:checked{background:var(--ac);border-color:var(--ac);scale:1.05}
+li input::after{content:"";width:11px;height:6px;border:2.4px solid var(--navon);border-top:0;border-right:0;rotate:-45deg;translate:0 -1px;opacity:0;transition:opacity .15s}
+li input:checked::after{opacity:1}
+li label{flex:1;cursor:pointer;padding-top:2px}li.done label{text-decoration:line-through;color:var(--mut)}
+.n{font-weight:650;margin-right:6px;font-variant-numeric:tabular-nums}
+li.next{background:color-mix(in srgb,var(--ac) 10%,transparent);border-radius:var(--r-in);border-color:transparent}li.next label{font-weight:600}
+.coach h3,.trend h3{color:var(--mut);font-weight:600}.trend{color:var(--ac)}
+.dots{display:grid;grid-auto-flow:column;grid-template-rows:repeat(7,1fr);gap:7px;justify-content:space-between}.dots i{width:12px;height:12px;border-radius:4px;background:var(--chip)}
+.dots i.l1{background:color-mix(in srgb,var(--ac) 35%,var(--chip))}.dots i.l2{background:color-mix(in srgb,var(--ac) 68%,var(--chip))}.dots i.l3{background:var(--ac)}.dots i.f{opacity:0}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px}.stat{padding:20px}
+.stat b{display:block;font-size:2.5rem;font-weight:700;letter-spacing:-.035em;line-height:1.1;font-variant-numeric:tabular-nums}.stat span{color:var(--mut);font-size:.875rem}
+.bars{display:flex;align-items:flex-end;gap:5px;height:42px;margin-top:10px}.bars i{flex:1;background:var(--ac);border-radius:5px;min-height:3px}
+.cmp div{display:flex;align-items:center;gap:10px;margin:8px 0;font-size:.875rem}.cmp em{width:112px;font-style:normal;color:var(--mut)}.cmp u{display:block;height:10px;border-radius:var(--pill);background:var(--ac);text-decoration:none}
+.ach{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px}
+.ac{background:var(--card);border-radius:var(--r-in);box-shadow:var(--sh);padding:16px;opacity:.55}.ac.ok{opacity:1}
+.ac i{font-style:normal;display:grid;place-items:center;width:38px;height:38px;border-radius:50%;background:var(--chip);margin-bottom:10px}.ac.ok i{background:var(--ac);color:var(--navon)}.ac b{display:block;font-weight:600}.ac span{font-size:.8125rem;color:var(--mut)}
+#app.anim>*{animation:rise .6s var(--ease) both}#app.anim>:nth-child(2){animation-delay:.05s}#app.anim>:nth-child(3){animation-delay:.1s}#app.anim>:nth-child(4){animation-delay:.15s}#app.anim>:nth-child(n+5){animation-delay:.2s}
+@keyframes rise{from{opacity:0;translate:0 16px}}
+#splash{position:fixed;inset:0;z-index:100;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;text-align:center;padding:24px;transition:opacity .5s var(--ease),scale .5s var(--ease)}
+#splash.out{opacity:0;scale:1.03;pointer-events:none}
+.sp-logo{width:88px;height:88px;border-radius:28px;background:var(--nav);color:var(--navon);display:grid;place-items:center;box-shadow:0 18px 44px color-mix(in srgb,var(--ac) 35%,transparent);animation:logo .8s var(--spring) both}
+.sp-logo svg{width:46px;height:46px;fill:none;stroke:currentColor;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:40;stroke-dashoffset:40;animation:draw .7s ease .5s forwards}
+.sp-t{margin:6px 0 0;font-size:2rem;font-weight:700;letter-spacing:-.035em;animation:gup .6s var(--ease) .2s both}.sp-sub{margin:0;color:var(--mut);animation:gup .6s var(--ease) .3s both}
+#sq{margin:8px 0 0;max-width:320px;font-size:1.0625rem;font-weight:500;line-height:1.4;min-height:3em;animation:gup .7s var(--ease) .6s both}
+.sp-bar{width:min(220px,70%);height:5px;border-radius:var(--pill);background:var(--chip);overflow:hidden;margin-top:10px}.sp-bar i{display:block;height:100%;width:0;background:var(--ac);border-radius:var(--pill);transition:width .5s var(--ease)}
+@keyframes logo{from{opacity:0;scale:.6;rotate:-10deg}}@keyframes draw{to{stroke-dashoffset:0}}
+@media(max-width:560px){.hero{padding:22px}.duo{gap:10px}.card{padding:18px}.tw{grid-template-columns:1fr}}
+
+/* 7 · Preferencias del sistema y fallbacks */
+@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){nav,.sheet,.toast{background:var(--card)}.cel{background:var(--bg)}}
+@media(prefers-reduced-transparency:reduce){nav,.sheet,.toast,#modal,.tm{-webkit-backdrop-filter:none;backdrop-filter:none}nav,.sheet,.toast{background:var(--card)}.cel{background:var(--bg)}}
+@media(prefers-contrast:more){:root{--bd:currentColor}.card,.gc,.hero,.nextc,.dh,.stat,.tc{box-shadow:inset 0 0 0 1.5px var(--tx)}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-delay:0ms!important;transition-duration:.01ms!important}.cf{display:none}}
+
+/* Login (fase 1) */
+#amodal{position:fixed;inset:0;z-index:40;background:rgb(0 0 0/.32);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);display:none;align-items:flex-end;justify-content:center}
+#amodal.open{display:flex}
+@media(min-width:700px){#amodal{align-items:center}}
+#amodal input{display:block;width:100%;box-sizing:border-box;min-height:52px;padding:0 16px;margin-bottom:10px;border:1px solid var(--bd);border-radius:var(--r-in);background:color-mix(in srgb,var(--card) 70%,transparent);color:var(--tx);font:inherit}
+#amodal input:focus-visible{outline:0;border-color:var(--ac);box-shadow:0 0 0 4px color-mix(in srgb,var(--ac) 25%,transparent)}
+#amodal .alt{width:100%;min-height:44px;margin-top:6px;background:none;border:0;color:var(--mut);font:inherit;text-decoration:underline;cursor:pointer}
+</style>
+</head>
+<body>
+<a class="skip" href="#app">Saltar al contenido</a>
+<div id="splash" role="status" aria-live="polite">
+  <div class="sp-logo"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg></div>
+  <div class="sp-t">Paso a Paso</div>
+  <p class="sp-sub">Un paso a la vez</p>
+  <p id="sq"></p>
+  <div class="sp-bar"><i id="spbar"></i></div>
+</div>
+<main id="app"></main>
+<nav aria-label="Principal">
+  <button id="nh"><svg viewBox="0 0 24 24"><path d="M3 11l9-8 9 8v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg><span>Inicio</span></button>
+  <button id="nn"><svg viewBox="0 0 24 24"><path d="M6 7v10M18 7v10M3 10v4M21 10v4M6 12h12"/></svg><span>Objetivos</span></button>
+  <button id="np"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4-6 8-6s7 2 8 6"/></svg><span>Perfil</span></button>
+</nav>
+<div id="modal">
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="mt">
+    <h2 id="mt">Nuevo objetivo</h2>
+    <p>Cuéntame qué quieres lograr y te armo el plan paso a paso.</p>
+    <input type="text" id="in" aria-label="Tu objetivo" placeholder="Ej: quiero aprender inglés" maxlength="140" autocomplete="off">
+    <p style="margin:14px 0 0">¿Cuánto tiempo puedes dedicarle? (opcional)</p><div class="times" id="times" role="group" aria-label="Tiempo disponible"></div>
+    <div class="msg" id="msg" role="status" aria-live="polite"></div>
+    <button class="go" id="btn">Crear plan</button>
+  </div>
+</div>
+<div id="amodal">
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="amt">
+    <h2 id="amt">Inicia sesión</h2>
+    <p>Necesitas una cuenta para crear planes con IA. Es gratis.</p>
+    <input type="email" id="aemail" aria-label="Correo" placeholder="Correo" autocomplete="email">
+    <input type="password" id="apass" aria-label="Contraseña" placeholder="Contraseña (mínimo 6)" autocomplete="current-password">
+    <div class="msg" id="aem" role="status" aria-live="polite"></div>
+    <button class="go" id="abtn">Entrar</button>
+    <button class="alt" id="aalt"></button>
+    <button class="alt" id="aclose">Ahora no</button>
+  </div>
+</div>
+<script>
+var KEY = "pasos-v2", goals = [], view = "home", cur = null, busy = false;
+var $ = function (id) { return document.getElementById(id); };
+var NS = "http://www.w3.org/2000/svg";
+var IC = (function () {
+  function i(d) { return '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">' + d + "</svg>"; }
+  return { back: i('<path d="M15 5l-7 7 7 7"/>'), theme: i('<circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 1 0 18z" fill="currentColor"/>'),
+    refresh: i('<path d="M20 12a8 8 0 1 1-2.6-5.9M20 4v5h-5"/>'), up: i('<path d="M12 19V5M6 11l6-6 6 6"/>'), down: i('<path d="M12 5v14M6 13l6 6 6-6"/>'), x: i('<path d="M6 6l12 12M18 6L6 18"/>'), plus: i('<path d="M12 5v14M5 12h14"/>') };
+})();
+
+function dk(d) {
+  d = d || new Date();
+  return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+}
+function load() {
+  try {
+    var r = localStorage.getItem(KEY) || localStorage.getItem("pasos-v1");
+    goals = r ? JSON.parse(r) : [];
+  } catch (e) { goals = []; }
+}
+function save() { try { localStorage.setItem(KEY, JSON.stringify(goals)); } catch (e) {} }
+function el(tag, cls, text) {
+  var e = document.createElement(tag);
+  if (cls) e.className = cls;
+  if (text != null) e.textContent = text;
+  return e;
+}
+function svg(t, a) {
+  var e = document.createElementNS(NS, t);
+  for (var k in a) e.setAttribute(k, a[k]);
+  return e;
+}
+function pct(g) {
+  if (!g.steps.length) return 0;
+  return Math.round(g.steps.filter(function (s) { return s.done; }).length / g.steps.length * 100);
+}
+function allSteps() {
+  var a = [];
+  goals.forEach(function (g) { a = a.concat(g.steps); });
+  return a;
+}
+function counts() {
+  var m = {};
+  allSteps().forEach(function (s) { if (s.done && s.doneAt) m[s.doneAt] = (m[s.doneAt] || 0) + 1; });
+  return m;
+}
+function streak(c) {
+  var d = new Date(), n = 0;
+  if (!c[dk(d)]) d.setDate(d.getDate() - 1);
+  while (c[dk(d)]) { n++; d.setDate(d.getDate() - 1); }
+  return n;
+}
+function ring(p, size, sw) {
+  var wrap = el("div", "ring"), r = (size - sw) / 2, c = 2 * Math.PI * r, h = size / 2;
+  var s = svg("svg", { width: "100%", height: "100%", viewBox: "0 0 " + size + " " + size });
+  s.appendChild(svg("circle", { cx: h, cy: h, r: r, fill: "none", stroke: "currentColor", "stroke-opacity": ".2", "stroke-width": sw }));
+  s.appendChild(svg("circle", { cx: h, cy: h, r: r, fill: "none", stroke: "currentColor", "stroke-width": sw, "stroke-linecap": "round", "stroke-dasharray": (c * p / 100) + " " + c, transform: "rotate(-90 " + h + " " + h + ")" }));
+  wrap.appendChild(s);
+  wrap.appendChild(el("span", null, p + "%"));
+  return wrap;
+}
+function topbar(app, title, sub, back) {
+  var t = el("div", "top"), l = el("div");
+  if (back) {
+    var b = el("button", "rb");
+    b.innerHTML = IC.back; b.setAttribute("aria-label", "Volver");
+    b.onclick = function () { editing = false; view = back; render(); };
+    t.appendChild(b);
+  }
+  var box = el("div");
+  box.style.flex = "1";
+  box.appendChild(el("h1", null, title));
+  box.appendChild(el("div", "date", sub));
+  t.appendChild(box);
+  var th = el("button", "rb");
+  th.innerHTML = IC.theme; th.title = "Cambiar tema"; th.setAttribute("aria-label", "Cambiar tema");
+  th.onclick = openThemes;
+  t.appendChild(th);
+  app.appendChild(t);
+}
+function home(app) {
+  var c = counts(), all = allSteps(), done = all.filter(function (s) { return s.done; }).length;
+  var p = all.length ? Math.round(done / all.length * 100) : 0;
+  topbar(app, "Hola" + (getName() ? ", " + getName() : ""), homeMsg(done, c));
+  var week = el("div", "week"), n = new Date(), off = (n.getDay() + 6) % 7;
+  for (var i = 0; i < 7; i++) {
+    var d = new Date(n.getFullYear(), n.getMonth(), n.getDate() - off + i), k = dk(d);
+    var box = el("div", "day" + (k === dk() ? " on" : "") + (c[k] ? " has" : ""));
+    box.appendChild(el("i"));
+    box.appendChild(document.createTextNode(d.toLocaleDateString("es", { weekday: "short" })));
+    box.appendChild(el("b", null, String(d.getDate())));
+    week.appendChild(box);
+  }
+  app.appendChild(week);
+  var hero = el("div", "hero"), left = el("div");
+  var g0 = goals.filter(function (o) { return pct(o) < 100; })[0];
+  left.appendChild(el("small", null, "Hoy"));
+  left.appendChild(el("h3", null, g0 ? g0.text : (goals.length ? "Todo al día" : "Empieza hoy")));
+  var chs = el("div", "chips");
+  chs.appendChild(el("span", null, goals.length + " objetivos"));
+  chs.appendChild(el("span", null, p + " % completado"));
+  left.appendChild(chs);
+  var cta = el("button", "cta", !goals.length ? "Crear mi primer objetivo" : goals.some(function (o) { return pct(o) < 100; }) ? "Continuar" : "Empezar otro objetivo");
+  cta.onclick = function () {
+    var g = goals.filter(function (o) { return pct(o) < 100; })[0];
+    if (g) { cur = g.id; view = "detail"; render(); } else openModal();
+  };
+  left.appendChild(cta);
+  hero.appendChild(left);
+  if (c[dk()]) hero.appendChild(el("span", "badge", "✓ Hoy avanzaste"));
+  app.appendChild(hero);
+  var tr = el("div", "trio");
+  [[String(c[dk()] || 0), "pasos hoy"], [String(streak(c)), "días de racha"], [String(ach().filter(function (a) { return a.ok; }).length), "logros"]].forEach(function (r) {
+    var t = el("div", "tc");
+    t.appendChild(el("b", null, r[0])); t.appendChild(el("span", null, r[1]));
+    tr.appendChild(t);
+  });
+  app.appendChild(tr);
+  var pc = el("div", "card pills"), pg = el("div", "pg"), pn = 0, ph = el("div", "ph");
+  for (var q = 29; q >= 0; q--) {
+    var dd = new Date(); dd.setDate(dd.getDate() - q);
+    var on = c[dk(dd)] > 0;
+    if (on) pn++;
+    pg.appendChild(el("i", (on ? "f" : "") + (q === 0 ? " t" : "")));
+  }
+  ph.appendChild(el("span", null, "Últimos 30 días")); ph.appendChild(el("span", null, pn + " · meta " + getMeta() + "/sem"));
+  pc.appendChild(ph); pc.appendChild(pg);
+  pc.style.cursor = "pointer";
+  pc.onclick = function () { view = "stats"; render(); };
+  app.appendChild(pc);
+  var wr = el("div", "duo"), v1 = el("div", "card vol"), v2 = el("div", "card"), now0 = new Date();
+  var wk8 = [], mx8 = 1, tot8 = 0;
+  for (var w3 = 7; w3 >= 0; w3--) {
+    var t3 = 0;
+    for (var d3 = 0; d3 < 7; d3++) t3 += c[dk(new Date(now0.getFullYear(), now0.getMonth(), now0.getDate() - w3 * 7 - d3))] || 0;
+    wk8.push(t3); tot8 += t3; if (t3 > mx8) mx8 = t3;
+  }
+  v1.appendChild(el("small", null, "Pasos · 8 semanas"));
+  v1.appendChild(el("b", null, String(tot8)));
+  var s8 = svg("svg", { viewBox: "0 0 120 50", width: "100%", height: "50", preserveAspectRatio: "none" });
+  var p8 = wk8.map(function (v, i) { return (i * 120 / 7) + " " + (46 - v / mx8 * 40); });
+  s8.appendChild(svg("path", { d: "M0 50 L" + p8.join(" L") + " L120 50 Z", fill: "currentColor", "fill-opacity": ".18" }));
+  s8.appendChild(svg("path", { d: "M" + p8.join(" L"), fill: "none", stroke: "currentColor", "stroke-width": 2, "vector-effect": "non-scaling-stroke" }));
+  v1.appendChild(s8);
+  var wo = (now0.getDay() + 6) % 7, wv = [], wt = 0, wp = 0, wm = 1;
+  for (var ei = 0; ei < 7; ei++) {
+    var vv = c[dk(new Date(now0.getFullYear(), now0.getMonth(), now0.getDate() - wo + ei))] || 0;
+    wv.push(vv); wt += vv; if (vv > wm) wm = vv;
+    wp += c[dk(new Date(now0.getFullYear(), now0.getMonth(), now0.getDate() - wo - 7 + ei))] || 0;
+  }
+  v2.appendChild(el("small", null, "Esta semana · pasos por día"));
+  var vh = el("div", "vh");
+  vh.appendChild(el("b", null, String(wt)));
+  if (wp > 0) vh.appendChild(el("em", wt >= wp ? "up" : "dn", (wt >= wp ? "+" : "") + Math.round((wt - wp) / wp * 100) + "%"));
+  v2.appendChild(vh);
+  var wbs = el("div", "wbars");
+  wv.forEach(function (v, i) {
+    var col = el("div"), bar = el("i");
+    bar.style.height = Math.max(4, v / wm * 100) + "%";
+    col.appendChild(bar); col.appendChild(el("span", null, "LMMJVSD".charAt(i)));
+    wbs.appendChild(col);
+  });
+  v2.appendChild(wbs);
+  v1.onclick = v2.onclick = function () { view = "stats"; render(); };
+  wr.appendChild(v1); wr.appendChild(v2);
+  app.appendChild(wr);
+  var ad = wv.filter(function (v) { return v > 0; }).length, mt = getMeta();
+  var mcd = el("div", "card meta"), mh = el("div", "vh"), mbr = el("div", "mbar"), mfl = document.createElement("i");
+  mcd.appendChild(el("small", null, "Meta semanal"));
+  mh.appendChild(el("b", null, ad + " / " + mt + " días"));
+  mh.appendChild(el("span", null, ad >= mt ? "¡Meta cumplida!" : (mt - ad === 1 ? "Te falta 1 día" : "Te faltan " + (mt - ad) + " días")));
+  mfl.style.width = Math.min(100, ad / mt * 100) + "%";
+  mbr.appendChild(mfl);
+  mcd.appendChild(mh); mcd.appendChild(mbr);
+  mcd.onclick = function () { view = "profile"; render(); };
+  app.appendChild(mcd);
+  var ng = goals.filter(function (o) { return pct(o) < 100; })[0];
+  var ni = ng ? ng.steps.findIndex(function (s) { return !s.done; }) : -1;
+  if (ng && ni >= 0) {
+    app.appendChild(el("h2", null, "Tu siguiente paso"));
+    var nc = el("div", "nextc"), nt = el("div");
+    nt.appendChild(el("small", null, ng.text));
+    nt.appendChild(el("b", null, ng.steps[ni].t));
+    nc.appendChild(nt);
+    var nb = el("button", null, "Vamos a hacerlo");
+    nb.onclick = function () { cur = ng.id; view = "detail"; render(); };
+    nc.appendChild(nb);
+    app.appendChild(nc);
+  }
+  app.appendChild(el("h2", null, "Tus objetivos"));
+  if (!goals.length) {
+    var e = el("div", "empty", "Tu cambio empieza con un pequeño paso");
+    e.appendChild(document.createElement("br"));
+    var b = el("button", null, "Crear mi primer objetivo");
+    b.onclick = openModal;
+    e.appendChild(b);
+    app.appendChild(e);
+    return;
+  }
+  var grid = el("div", "grid");
+  goals.forEach(function (g, i) {
+    var card = el("button", "gc");
+    card.style.background = "var(--c" + (i % 5) + ")";
+    var top = el("div");
+    top.appendChild(el("span", "chip", g.nivel || "Medio"));
+    top.appendChild(el("h4", null, g.text));
+    card.appendChild(top);
+    var done = g.steps.filter(function (s) { return s.done; }).length;
+    card.appendChild(el("small", null, done + " de " + g.steps.length + " pasos"));
+    card.appendChild(ring(pct(g), 50, 5));
+    card.onclick = function () { cur = g.id; view = "detail"; render(); };
+    grid.appendChild(card);
+  });
+  app.appendChild(grid);
+}
+function detail(app) {
+  var gi = -1;
+  goals.forEach(function (g, i) { if (g.id === cur) gi = i; });
+  if (gi < 0) { view = "home"; return home(app); }
+  var g = goals[gi];
+  topbar(app, "Tu plan", "Marca cada paso al terminarlo", "home");
+  var dh = el("div", "dh");
+  dh.style.background = "var(--c" + (gi % 5) + ")";
+  dh.appendChild(el("span", "chip", g.nivel || "Medio"));
+  dh.appendChild(el("h2", null, g.text));
+  dh.appendChild(ring(pct(g), 76, 7));
+  if (g.due) {
+    var od = g.due < dk() && pct(g) < 100;
+    dh.appendChild(el("span", "chip due" + (od ? " od" : ""), (od ? "Venció " : "Vence ") + new Date(g.due + "T00:00:00").toLocaleDateString("es", { day: "numeric", month: "short" })));
+  }
+  var eb = el("button", "edb", "Editar");
+  eb.onclick = function () { editing = true; render(); };
+  dh.appendChild(eb);
+  app.appendChild(dh);
+  if (editing) return editGoal(app, g);
+  if (gs.gid !== g.id) {
+    gs.gid = g.id; gs.showAll = false;
+    var al0 = getAlarm();
+    gs.mode = al0 && al0.gid === g.id ? "snooze" : "step";
+  }
+  if (!gs.showAll && g.steps.some(function (s) { return !s.done; })) {
+    var box = el("div", "gbox");
+    app.appendChild(box);
+    stage(g, box);
+    var va = el("button", "del", "Ver todos los pasos");
+    va.onclick = function () { gs.showAll = true; render(); };
+    app.appendChild(va);
+    var fb2 = el("button", "del", "Modo enfoque (temporizador)");
+    fb2.onclick = function () { focusMode(g); };
+    app.appendChild(fb2);
+    return;
+  }
+  if (gs.showAll) {
+    var gb = el("button", "del", "Volver al paso guiado");
+    gb.onclick = function () { gs.showAll = false; render(); };
+    app.appendChild(gb);
+  }
+  if (pct(g) < 100) {
+    var fb = el("button", "newb", "Modo enfoque");
+    fb.style.marginBottom = "14px";
+    fb.onclick = function () { focusMode(g); };
+    app.appendChild(fb);
+  }
+  var card = el("div", "card"), ol = document.createElement("ol");
+  var hl = g.steps.findIndex(function (s) { return !s.done; });
+  g.steps.forEach(function (s, i) {
+    var li = el("li", (s.done ? "done" : "") + (i === hl ? " next" : "")), cb = document.createElement("input");
+    cb.type = "checkbox"; cb.checked = s.done; cb.id = "s" + i;
+    cb.onchange = function () {
+      var before = ach().filter(function (a) { return a.ok; }).length;
+      s.done = cb.checked; s.doneAt = cb.checked ? dk() : null; save(); render();
+      if (!cb.checked) return;
+      var after = ach().filter(function (a) { return a.ok; }).length;
+      if (pct(g) === 100) celebrate(g);
+      else toast(after > before ? "Logro desbloqueado" : MSGS[Math.floor(Math.random() * 3)]);
+    };
+    var lb = el("label");
+    lb.htmlFor = cb.id;
+    lb.appendChild(el("span", "n", (i + 1) + "."));
+    lb.appendChild(document.createTextNode(s.t));
+    li.appendChild(cb); li.appendChild(lb);
+    if (!s.done) {
+      var sb = el("button", "swp");
+      sb.innerHTML = IC.refresh;
+      sb.title = "Cambiar este paso con IA";
+      sb.setAttribute("aria-label", "Cambiar este paso con IA");
+      sb.onclick = async function () {
+        if (ai2) return;
+        ai2 = true; sb.textContent = "…";
+        try {
+          var r = await askJSON("Objetivo: \"" + g.text + "\". Paso actual: \"" + s.t + "\". Propón UNA alternativa distinta, más fácil y concreta, en una sola frase en español. Responde SOLO con JSON: {\"paso\":\"...\"}");
+          if (typeof r.paso !== "string" || !r.paso.trim()) throw new Error("vacío");
+          s.t = r.paso.trim(); save(); render(); toast("Paso cambiado");
+        } catch (e) { sb.innerHTML = IC.refresh; toast("No pude cambiarlo"); }
+        ai2 = false;
+      };
+      li.appendChild(sb);
+    }
+    ol.appendChild(li);
+  });
+  card.appendChild(ol);
+  app.appendChild(card);
+  var co = el("div", "card coach"), cr = el("div", "times");
+  co.appendChild(el("h3", null, "Coach IA · ¿Cómo te va con este plan?"));
+  ["Muy fácil", "Va bien", "Muy difícil"].forEach(function (f) {
+    var b = el("button", null, f);
+    b.type = "button";
+    b.onclick = async function () {
+      if (f === "Va bien") return toast("Perfecto, sigue a tu ritmo");
+      var pend = g.steps.filter(function (s) { return !s.done; });
+      if (!pend.length || ai2) return;
+      ai2 = true; b.textContent = "Ajustando…";
+      try {
+        var hechos = g.steps.filter(function (s) { return s.done; }).map(function (s) { return s.t; }).join("; ") || "ninguno";
+        var r = await askJSON("Objetivo: \"" + g.text + "\". Pasos ya hechos: " + hechos + ". Pasos pendientes: " + pend.map(function (s) { return s.t; }).join("; ") + ". La persona dice que el plan le resulta " + f.toLowerCase() + ". Reescribe SOLO los pasos pendientes (de 3 a 6), ordenados del más sencillo al más exigente, " + (f === "Muy fácil" ? "algo más exigentes" : "más pequeños y fáciles") + ", concretos y sin frases vagas. Responde SOLO con JSON: {\"pasos\":[\"...\"]}");
+        var np = (Array.isArray(r.pasos) ? r.pasos : []).filter(function (x) { return typeof x === "string" && x.trim(); }).slice(0, 6);
+        if (np.length < 2) throw new Error("vacío");
+        g.steps = g.steps.filter(function (s) { return s.done; }).concat(np.map(function (x) { return { t: x.trim(), done: false, doneAt: null }; }));
+        save(); render(); toast("Plan ajustado");
+      } catch (e) { b.textContent = f; toast("No pude ajustar el plan"); }
+      ai2 = false;
+    };
+    cr.appendChild(b);
+  });
+  co.appendChild(cr);
+  app.appendChild(co);
+  var del = el("button", "del", "Eliminar objetivo");
+  del.onclick = function () {
+    if (confirm("¿Eliminar este objetivo?")) { goals.splice(gi, 1); save(); view = "home"; render(); }
+  };
+  app.appendChild(del);
+}
+function stats(app) {
+  var c = counts(), all = allSteps(), total = all.filter(function (s) { return s.done; }).length;
+  topbar(app, "Tu progreso", "Cada paso cuenta", "home");
+  var card = el("div", "card");
+  card.appendChild(el("h3", null, "Últimas 12 semanas"));
+  var dots = el("div", "dots"), n = new Date(), off = (n.getDay() + 6) % 7, today = dk();
+  for (var w = 11; w >= 0; w--) {
+    for (var d = 0; d < 7; d++) {
+      var dt = new Date(n.getFullYear(), n.getMonth(), n.getDate() - off - w * 7 + d), k = dk(dt), v = c[k] || 0;
+      dots.appendChild(el("i", k > today ? "f" : v >= 4 ? "l3" : v >= 2 ? "l2" : v >= 1 ? "l1" : ""));
+    }
+  }
+  card.appendChild(dots);
+  app.appendChild(card);
+  var st = el("div", "stats");
+  function stat(num, lbl) {
+    var s = el("div", "stat");
+    s.appendChild(el("b", null, String(num)));
+    s.appendChild(el("span", null, lbl));
+    st.appendChild(s);
+    return s;
+  }
+  stat(total, "pasos completados");
+  stat(streak(c), "días de racha");
+  stat(goals.filter(function (g) { return g.steps.length && pct(g) === 100; }).length, "objetivos logrados");
+  var last = stat("", "últimos 7 días"), bars = el("div", "bars"), mx = 1, vals = [];
+  for (var i = 6; i >= 0; i--) { var v2 = c[dk(new Date(n.getFullYear(), n.getMonth(), n.getDate() - i))] || 0; vals.push(v2); if (v2 > mx) mx = v2; }
+  vals.forEach(function (v3) { var b = document.createElement("i"); b.style.height = Math.max(8, v3 / mx * 100) + "%"; bars.appendChild(b); });
+  last.firstChild.textContent = vals.reduce(function (a, b) { return a + b; }, 0);
+  last.insertBefore(bars, null);
+  app.appendChild(st);
+  var cur7 = vals.reduce(function (a, b) { return a + b; }, 0), prev = 0;
+  for (var j = 7; j < 14; j++) prev += c[dk(new Date(n.getFullYear(), n.getMonth(), n.getDate() - j))] || 0;
+  var days7 = vals.filter(function (v) { return v > 0; }).length;
+  var cm = el("div", "card cmp");
+  cm.style.marginTop = "12px";
+  cm.appendChild(el("h3", null, "Mira cuánto has avanzado"));
+  if (!cur7 && !prev) {
+    cm.appendChild(el("p", null, "Completa tu primer paso y aquí verás tu avance."));
+  } else {
+    var mx2 = Math.max(cur7, prev, 1);
+    [["Semana anterior", prev], ["Últimos 7 días", cur7]].forEach(function (r) {
+      var row = el("div"), u = el("u");
+      u.style.width = Math.max(4, r[1] / mx2 * 60) + "%";
+      row.appendChild(el("em", null, r[0])); row.appendChild(u); row.appendChild(el("b", null, String(r[1])));
+      cm.appendChild(row);
+    });
+    cm.appendChild(el("p", null, "Has completado " + cur7 + " pasos esta semana, en " + days7 + " días diferentes."));
+    var gp = goals.filter(function (g) { return pct(g) > 0 && pct(g) < 100; })[0];
+    if (gp) cm.appendChild(el("p", null, "Tu objetivo “" + gp.text + "” está al " + pct(gp) + " %."));
+  }
+  app.appendChild(cm);
+  var wk = [], mw = 1;
+  for (var w2 = 7; w2 >= 0; w2--) {
+    var t2 = 0;
+    for (var d2 = 0; d2 < 7; d2++) t2 += c[dk(new Date(n.getFullYear(), n.getMonth(), n.getDate() - w2 * 7 - d2))] || 0;
+    wk.push(t2); if (t2 > mw) mw = t2;
+  }
+  var tcd = el("div", "card trend");
+  tcd.style.marginTop = "12px";
+  tcd.appendChild(el("h3", null, "Pasos por semana · últimas 8 semanas"));
+  var ts = svg("svg", { viewBox: "0 0 300 80", width: "100%", height: "80", preserveAspectRatio: "none" });
+  var pts = wk.map(function (v, i) { return (i * 300 / 7) + " " + (74 - v / mw * 64); });
+  ts.appendChild(svg("path", { d: "M0 80 L" + pts.join(" L") + " L300 80 Z", fill: "currentColor", "fill-opacity": ".12" }));
+  ts.appendChild(svg("path", { d: "M" + pts.join(" L"), fill: "none", stroke: "currentColor", "stroke-width": 2.5, "vector-effect": "non-scaling-stroke" }));
+  tcd.appendChild(ts);
+  app.appendChild(tcd);
+  var ah = el("h2", null, "Tus logros"), ag = el("div", "ach");
+  ah.style.margin = "22px 0 12px";
+  ach().forEach(function (a) {
+    var x = el("div", "ac" + (a.ok ? " ok" : ""));
+    x.appendChild(el("i", null, a.i)); x.appendChild(el("b", null, a.n)); x.appendChild(el("span", null, a.d));
+    ag.appendChild(x);
+  });
+  app.appendChild(ah); app.appendChild(ag);
+}
+var tmin = null, ai2 = false, MSGS = ["¡Un paso más!", "Vas avanzando", "Bien hecho"];
+var THEMES = [["yellow", "Negro y amarillo", "#0a0a0a", "#ffd60a"], ["light", "Claro", "#f7f7f8", "#0b0b0c"], ["green", "Verde", "#f1f7f3", "#145a46"], ["lilac", "Lila", "#f4f1fc", "#6b4fe0"], ["custom", "Personalizado", "#161616", "#ffd60a"]];
+async function aiText(prompt) {
+  if (typeof claude !== "undefined" && claude && claude.use) {
+    var sample = await claude.use("sample");
+    if (sample) { var res = await sample(prompt, { cache: false }); return res.text; }
+  }
+  var tk = null;
+  try { tk = window.PasoAuth ? await window.PasoAuth.token() : null; } catch (e) {}
+  if (!tk) { openAuth(); var e0 = new Error("ia"); e0.code = "need_login"; throw e0; }
+  var r = await fetch("/api/ai", { method: "POST", headers: { "content-type": "application/json", "authorization": "Bearer " + tk }, body: JSON.stringify({ prompt: prompt }) });
+  if (!r.ok) {
+    var bd = {}; try { bd = await r.json(); } catch (e) {}
+    var er = new Error("ia");
+    er.code = r.status === 401 ? "need_login" : r.status === 429 ? (bd.error === "limit_reached" ? "limit" : "rate_limited") : "error";
+    if (er.code === "limit") toast("Llegaste al límite gratis de esta semana. Pronto: plan Pro.");
+    if (er.code === "need_login") openAuth();
+    throw er;
+  }
+  var d = await r.json();
+  return d.text || "";
+}
+async function askJSON(prompt) {
+  return parse(await aiText(prompt));
+}
+var DARKV = { bg: "#000000", card: "#1c1c1e", tx: "#fff", mut: "#9a9a9a", bd: "#262626", chip: "#262626", glass: "rgba(44,44,46,.55)", sh: "0 8px 28px rgba(0,0,0,.55)" };
+var LIGHTV = { bg: "#f2f2f7", card: "#fff", tx: "#1d1d1f", mut: "#6e6e73", bd: "rgba(60,60,67,.14)", chip: "rgba(120,120,128,.12)", glass: "rgba(255,255,255,.6)", sh: "0 1px 2px rgba(0,0,0,.05),0 8px 24px rgba(0,0,0,.06)" };
+var CVARS = ["--bg", "--card", "--tx", "--mut", "--bd", "--chip", "--on", "--glass", "--sh", "--nav", "--ac", "--navon", "--navontx"];
+function getCustom() {
+  var d = { mode: "dark", accent: "#ffd60a", radius: 28 };
+  try {
+    var r = JSON.parse(localStorage.getItem("pasos-custom"));
+    if (r) {
+      if (r.mode === "light" || r.mode === "dark") d.mode = r.mode;
+      if (/^#[0-9a-f]{6}$/i.test(r.accent)) d.accent = r.accent;
+      if (r.radius >= 8 && r.radius <= 40) d.radius = +r.radius;
+    }
+  } catch (e) {}
+  return d;
+}
+function putCu(p) {
+  var cu = getCustom();
+  for (var k in p) cu[k] = p[k];
+  try { localStorage.setItem("pasos-custom", JSON.stringify(cu)); } catch (e) {}
+}
+function applyTheme(t) {
+  var s = document.documentElement.style, cu = getCustom();
+  CVARS.forEach(function (k) { s.removeProperty(k); });
+  s.setProperty("--r", cu.radius + "px");
+  if (t !== "custom") return;
+  var b = cu.mode === "dark" ? DARKV : LIGHTV, a = cu.accent;
+  var lum = (0.299 * parseInt(a.substr(1, 2), 16) + 0.587 * parseInt(a.substr(3, 2), 16) + 0.114 * parseInt(a.substr(5, 2), 16)) / 255;
+  var v = { "--bg": b.bg, "--card": b.card, "--tx": b.tx, "--mut": b.mut, "--bd": b.bd, "--chip": b.chip, "--on": b.tx, "--glass": b.glass, "--sh": b.sh, "--nav": a, "--ac": a, "--navon": lum > 0.6 ? "#1d1d1f" : "#fff", "--navontx": b.tx };
+  for (var k in v) s.setProperty(k, v[k]);
+}
+function setTheme(t) {
+  document.documentElement.setAttribute("data-theme", t); applyTheme(t);
+  try { localStorage.setItem("pasos-theme", t); } catch (e) {}
+}
+var editing = false;
+var gs = { gid: null, mode: "step", showAll: false, msg: null, mgEl: null }, gtick = null, actx = null, ringing = false;
+function unlockAudio() {
+  try {
+    if (!actx) actx = new (window.AudioContext || window.webkitAudioContext)();
+    if (actx.state === "suspended") actx.resume();
+  } catch (e) {}
+}
+function beep() {
+  if (!actx) return;
+  try {
+    [0, 0.25, 0.5].forEach(function (d) {
+      var o = actx.createOscillator(), gn = actx.createGain(), t0 = actx.currentTime + d;
+      o.type = "sine"; o.frequency.value = 880;
+      gn.gain.setValueAtTime(0.0001, t0);
+      gn.gain.exponentialRampToValueAtTime(0.35, t0 + 0.02);
+      gn.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.2);
+      o.connect(gn); gn.connect(actx.destination);
+      o.start(t0); o.stop(t0 + 0.22);
+    });
+  } catch (e) {}
+}
+function getAlarm() {
+  try { var a = JSON.parse(localStorage.getItem("pasos-alarm")); return a && a.gid && a.at ? a : null; } catch (e) { return null; }
+}
+function setAlarm(gid, mins) { try { localStorage.setItem("pasos-alarm", JSON.stringify({ gid: gid, at: Date.now() + mins * 60000 })); } catch (e) {} }
+function clearAlarm() { try { localStorage.removeItem("pasos-alarm"); } catch (e) {} }
+function checkAlarm() {
+  var a = getAlarm();
+  if (!a || a.at > Date.now() || ringing) return;
+  var g = goals.filter(function (x) { return x.id === a.gid; })[0];
+  clearAlarm();
+  if (!g || !g.steps.some(function (s) { return !s.done; })) return;
+  ringAlarm(g);
+}
+function ringAlarm(g) {
+  ringing = true;
+  var s = g.steps.filter(function (x) { return !x.done; })[0], tid = null, o = el("div", "cel");
+  o.setAttribute("role", "alertdialog");
+  o.appendChild(el("small", null, g.text));
+  o.appendChild(el("h2", null, "¡Es hora de tu paso!"));
+  o.appendChild(el("p", null, s.t));
+  var go = el("button", null, "Ir al paso"), sn = el("button", "fclose", "Aplazar otros 30 min");
+  function end() { clearInterval(tid); ringing = false; o.remove(); }
+  go.onclick = function () { end(); cur = g.id; view = "detail"; gs.gid = null; render(); };
+  sn.onclick = function () { end(); setAlarm(g.id, 30); toast("Te aviso en 30 minutos"); if (view === "detail") { gs.gid = null; render(); } };
+  o.appendChild(go); o.appendChild(sn);
+  document.body.appendChild(o);
+  beep();
+  try { if (navigator.vibrate) navigator.vibrate([300, 150, 300]); } catch (e) {}
+  tid = setInterval(function () { beep(); try { if (navigator.vibrate) navigator.vibrate(200); } catch (e) {} }, 2500);
+  go.focus();
+}
+var FBMSG = ["No pasa nada. Un paso pequeño sigue siendo un paso; respira y vuelve cuando estés listo.", "Lo importante no es hacerlo perfecto, sino volver a intentarlo. Hoy ya estás aquí, y eso cuenta.", "Si hoy costó, está bien. Puedes hacerlo más pequeño o más tarde. Lo que importa es no soltarlo."];
+function stage(g, box) {
+  clearInterval(gtick);
+  box.textContent = "";
+  var idx = g.steps.findIndex(function (s) { return !s.done; });
+  if (idx < 0) return;
+  var s = g.steps[idx], dots = el("div", "sdots"), mode = gs.mode, card;
+  if (mode === "snooze") { var a0 = getAlarm(); if (!a0 || a0.gid !== g.id) mode = gs.mode = "step"; }
+  g.steps.forEach(function (x, i) { dots.appendChild(el("i", x.done ? "d" : i === idx ? "c" : "")); });
+  box.appendChild(el("div", "slab", "Paso " + (idx + 1) + " de " + g.steps.length));
+  box.appendChild(dots);
+  function go(m) { gs.mode = m; stage(g, box); }
+  function snooze() { unlockAudio(); setAlarm(g.id, 30); toast("Te aviso en 30 minutos"); go("snooze"); }
+  if (mode === "step") {
+    card = el("button", "gstep");
+    card.type = "button";
+    card.appendChild(el("span", "gnum", String(idx + 1)));
+    card.appendChild(el("span", "gtx", s.t));
+    card.appendChild(el("span", "ghint", "Toca la tarjeta cuando lo hayas hecho"));
+    card.onclick = function () { go("ask"); };
+    box.appendChild(card);
+  } else if (mode === "ask") {
+    card = el("div", "gstep");
+    card.appendChild(el("span", "gq", "¿Lo hiciste?"));
+    card.appendChild(el("span", "gtx sm", s.t));
+    box.appendChild(card);
+    var bt = el("div", "gbtns"), yes = el("button", "gyes", "Sí"), no = el("button", "gno", "No"), sn = el("button", "gsn", "Aplazar 30 min");
+    yes.onclick = function () {
+      if (card.classList.contains("ok")) return;
+      var b4 = ach().filter(function (a) { return a.ok; }).length;
+      card.classList.add("ok");
+      setTimeout(function () {
+        s.done = true; s.doneAt = dk(); save();
+        var al = getAlarm();
+        if (al && al.gid === g.id) clearAlarm();
+        gs.mode = "step"; render();
+        if (pct(g) === 100) celebrate(g);
+        else toast(ach().filter(function (a) { return a.ok; }).length > b4 ? "Logro desbloqueado" : MSGS[Math.floor(Math.random() * 3)]);
+      }, 450);
+    };
+    no.onclick = function () { gs.msg = null; go("no"); };
+    sn.onclick = snooze;
+    bt.appendChild(yes); bt.appendChild(no); bt.appendChild(sn);
+    box.appendChild(bt);
+  } else if (mode === "no") {
+    card = el("div", "gstep");
+    var mg = el("p", "gmsg");
+    card.appendChild(el("span", "slab", "Está bien, a veces pasa"));
+    card.appendChild(mg);
+    box.appendChild(card);
+    gs.mgEl = mg;
+    if (gs.msg) mg.textContent = gs.msg;
+    else {
+      mg.appendChild(el("span", "gload"));
+      mg.appendChild(el("span", "gload"));
+      if (gs.msg === null) {
+        gs.msg = "";
+        askJSON("Objetivo de la persona: \"" + g.text + "\". Paso que no logró hacer ahora: \"" + s.t + "\". Escribe 2 o 3 frases breves de ánimo en español, cálidas y realistas, hablándole de tú y relacionadas con este objetivo. No juzgues, no presiones, no prometas resultados y no inventes datos sobre la persona. Si el tema es emocional, sé especialmente amable. Responde SOLO con JSON: {\"mensaje\":\"...\"}")
+          .then(function (r) { if (typeof r.mensaje === "string" && r.mensaje.trim()) return r.mensaje.trim().slice(0, 400); throw new Error("vacío"); })
+          .catch(function () { return FBMSG[Math.floor(Math.random() * 3)]; })
+          .then(function (m) { gs.msg = m; if (gs.mgEl) gs.mgEl.textContent = m; });
+      }
+    }
+    var b2 = el("div", "gbtns"), re = el("button", "gyes", "Intentarlo otra vez"), sn2 = el("button", "gno", "Aplazar 30 min");
+    re.onclick = function () { go("step"); };
+    sn2.onclick = snooze;
+    b2.appendChild(re); b2.appendChild(sn2);
+    box.appendChild(b2);
+  } else {
+    card = el("div", "gstep");
+    card.appendChild(el("span", "slab", "Aplazado. Te aviso en"));
+    var cd = el("span", "gcount", "30:00");
+    card.appendChild(cd);
+    card.appendChild(el("span", "gtx sm", s.t));
+    card.appendChild(el("span", "ghint", "Deja esta página abierta para oír la alarma."));
+    box.appendChild(card);
+    var tick = function () {
+      var a = getAlarm(), left = a && a.gid === g.id ? Math.max(0, Math.round((a.at - Date.now()) / 1000)) : 0;
+      cd.textContent = String(Math.floor(left / 60)).padStart(2, "0") + ":" + String(left % 60).padStart(2, "0");
+    };
+    tick(); gtick = setInterval(tick, 1000);
+    var b3 = el("div", "gbtns"), now2 = el("button", "gyes", "Hacerlo ahora"), cn = el("button", "gno", "Cancelar aviso");
+    now2.onclick = function () { clearAlarm(); go("step"); };
+    cn.onclick = function () { clearAlarm(); toast("Aviso cancelado"); go("step"); };
+    b3.appendChild(now2); b3.appendChild(cn);
+    box.appendChild(b3);
+  }
+}
+function editGoal(app, g) {
+  var card = el("div", "card"), nm = document.createElement("input"), dt = document.createElement("input");
+  card.appendChild(el("h3", null, "Nombre del objetivo"));
+  nm.type = "text"; nm.className = "pin"; nm.value = g.text; nm.maxLength = 140; nm.setAttribute("aria-label", "Nombre del objetivo");
+  nm.onchange = function () { if (nm.value.trim()) { g.text = nm.value.trim(); save(); } else nm.value = g.text; };
+  card.appendChild(nm);
+  var h2 = el("h3", null, "Fecha límite (opcional)");
+  h2.style.marginTop = "14px";
+  card.appendChild(h2);
+  dt.type = "date"; dt.className = "pin"; dt.value = g.due || ""; dt.setAttribute("aria-label", "Fecha límite");
+  dt.onchange = function () { g.due = dt.value || null; save(); };
+  card.appendChild(dt);
+  app.appendChild(card);
+  var sc = el("div", "card");
+  sc.appendChild(el("h3", null, "Pasos"));
+  g.steps.forEach(function (s, i) {
+    var row = el("div", "erow"), ti = document.createElement("input");
+    ti.type = "text"; ti.className = "pin"; ti.value = s.t; ti.maxLength = 200; ti.setAttribute("aria-label", "Paso " + (i + 1));
+    ti.onchange = function () { if (ti.value.trim()) { s.t = ti.value.trim(); save(); } else ti.value = s.t; };
+    row.appendChild(ti);
+    [["up", -1, "Subir paso"], ["down", 1, "Bajar paso"], ["x", 0, "Quitar paso"]].forEach(function (a) {
+      var b = el("button", "ib");
+      b.innerHTML = IC[a[0]];
+      b.type = "button"; b.setAttribute("aria-label", a[2]);
+      b.onclick = function () {
+        if (a[1] === 0) g.steps.splice(i, 1);
+        else {
+          var j = i + a[1];
+          if (j < 0 || j >= g.steps.length) return;
+          var t = g.steps[i]; g.steps[i] = g.steps[j]; g.steps[j] = t;
+        }
+        save(); render();
+      };
+      row.appendChild(b);
+    });
+    sc.appendChild(row);
+  });
+  var add = el("div", "erow"), ni = document.createElement("input"), ab = el("button", "ib");
+  ni.type = "text"; ni.className = "pin"; ni.placeholder = "Añadir un paso nuevo"; ni.maxLength = 200;
+  function addStep() {
+    var t = ni.value.trim();
+    if (!t) return;
+    g.steps.push({ t: t, done: false, doneAt: null }); save(); render();
+  }
+  ab.innerHTML = IC.plus; ab.onclick = addStep; ab.setAttribute("aria-label", "Añadir paso");
+  ni.addEventListener("keydown", function (e) { if (e.key === "Enter") addStep(); });
+  add.appendChild(ni); add.appendChild(ab);
+  sc.appendChild(add);
+  app.appendChild(sc);
+  var dn = el("button", "newb", "Listo");
+  dn.onclick = function () { editing = false; render(); };
+  app.appendChild(dn);
+}
+function focusMode(g) {
+  var idx = g.steps.findIndex(function (s) { return !s.done; });
+  if (idx < 0) return toast("No quedan pasos pendientes");
+  var s = g.steps[idx], mins = 25, left = 1500, tid = null, endAt = 0;
+  var o = el("div", "cel"), tm = el("div", "ftime", "25:00"), chips = el("div", "times");
+  o.setAttribute("role", "dialog");
+  function fmt(t) { return String(Math.floor(t / 60)).padStart(2, "0") + ":" + String(t % 60).padStart(2, "0"); }
+  function stop() { if (tid) { clearInterval(tid); tid = null; } }
+  o.appendChild(el("small", null, g.text));
+  o.appendChild(el("h2", null, s.t));
+  o.appendChild(el("p", null, "Antes de empezar: apaga el celular, cierra las pestañas que no necesites y deja a mano solo lo necesario."));
+  var go = el("button", null, "Iniciar");
+  [15, 25, 45].forEach(function (m) {
+    var b = el("button", m === 25 ? "on" : "", m + " min");
+    b.type = "button";
+    b.onclick = function () {
+      stop(); mins = m; left = m * 60; tm.textContent = fmt(left); go.textContent = "Iniciar";
+      Array.prototype.forEach.call(chips.children, function (x) { x.className = ""; });
+      b.className = "on";
+    };
+    chips.appendChild(b);
+  });
+  go.onclick = function () {
+    if (tid) { stop(); left = Math.max(0, Math.round((endAt - Date.now()) / 1000)); go.textContent = "Continuar"; return; }
+    endAt = Date.now() + left * 1000;
+    go.textContent = "Pausar";
+    tid = setInterval(function () {
+      left = Math.max(0, Math.round((endAt - Date.now()) / 1000));
+      tm.textContent = fmt(left);
+      if (left === 0) {
+        stop(); go.textContent = "Iniciar"; left = mins * 60;
+        toast("¡Tiempo! Buen trabajo");
+        try { if (navigator.vibrate) navigator.vibrate(300); } catch (e) {}
+      }
+    }, 500);
+  };
+  var ex = el("button", null, "Explícame este paso"), exp = el("p", "fexp");
+  ex.onclick = async function () {
+    if (ai2) return;
+    ai2 = true; ex.textContent = "Pensando…";
+    try {
+      var r = await askJSON("Objetivo: \"" + g.text + "\". Paso: \"" + s.t + "\". Explica en 3 o 4 frases cortas y en español cómo hacer este paso, de forma práctica y sin exagerar. Responde SOLO con JSON: {\"explicacion\":\"...\"}");
+      if (typeof r.explicacion !== "string" || !r.explicacion.trim()) throw new Error("vacío");
+      exp.textContent = r.explicacion.trim();
+    } catch (e) { toast("No pude explicarlo ahora"); }
+    ai2 = false; ex.textContent = "Explícame este paso";
+  };
+  var dn = el("button", null, "Marcar paso como hecho");
+  dn.onclick = function () {
+    stop(); s.done = true; s.doneAt = dk(); save(); o.remove(); render();
+    if (pct(g) === 100) celebrate(g); else toast(MSGS[Math.floor(Math.random() * 3)]);
+  };
+  var cl = el("button", "fclose", "Cerrar");
+  cl.onclick = function () { stop(); o.remove(); };
+  o.appendChild(tm); o.appendChild(chips); o.appendChild(go); o.appendChild(ex); o.appendChild(exp); o.appendChild(dn); o.appendChild(cl);
+  document.body.appendChild(o);
+  go.focus();
+}
+function getMeta() {
+  var m = 4;
+  try { m = parseInt(localStorage.getItem("pasos-meta"), 10) || 4; } catch (e) {}
+  return Math.min(7, Math.max(1, m));
+}
+function getName() {
+  try { return localStorage.getItem("pasos-name") || ""; } catch (e) { return ""; }
+}
+function goalsView(app) {
+  topbar(app, "Objetivos", goals.length + " en total");
+  var nb = el("button", "newb", "+ Nuevo objetivo");
+  nb.onclick = openModal;
+  app.appendChild(nb);
+  app.appendChild(el("h2", null, "Tus objetivos"));
+  if (!goals.length) app.appendChild(el("div", "empty", "Aún no tienes objetivos."));
+  var gr = el("div", "grid");
+  goals.forEach(function (g) {
+    var card = el("button", "gc"), top = el("div");
+    top.appendChild(el("span", "chip", g.nivel || "Medio"));
+    top.appendChild(el("h4", null, g.text));
+    card.appendChild(top);
+    card.appendChild(el("small", null, g.steps.filter(function (s) { return s.done; }).length + " de " + g.steps.length + " pasos"));
+    card.appendChild(ring(pct(g), 50, 5));
+    card.onclick = function () { cur = g.id; view = "detail"; render(); };
+    gr.appendChild(card);
+  });
+  app.appendChild(gr);
+  var ih = el("h2", null, "Ideas para empezar");
+  ih.style.margin = "22px 0 12px";
+  app.appendChild(ih);
+  var ch = el("div", "ideas");
+  ["Aprender inglés", "Terminar una tarea", "Hacer ejercicio 3 veces por semana", "Ordenar mi cuarto", "Ahorrar dinero", "Estudiar para un examen"].forEach(function (t) {
+    var b = el("button", null, t);
+    b.onclick = function () { openModal(); $("in").value = t; };
+    ch.appendChild(b);
+  });
+  app.appendChild(ch);
+}
+function profile(app) {
+  topbar(app, "Perfil", "Tu espacio");
+  var c1 = el("div", "card"), inp = document.createElement("input");
+  c1.appendChild(el("h3", null, "Tu nombre"));
+  inp.type = "text"; inp.className = "pin"; inp.maxLength = 30; inp.placeholder = "¿Cómo te llamas?"; inp.value = getName();
+  inp.onchange = function () { try { localStorage.setItem("pasos-name", inp.value.trim()); } catch (e) {} toast("Nombre guardado"); };
+  c1.appendChild(inp);
+  app.appendChild(c1);
+  var c2 = el("div", "card"), row = el("div", "stepper"), val = el("b"), mn = el("button", null, "−"), pl = el("button", null, "+");
+  c2.appendChild(el("h3", null, "Meta semanal: días con avance"));
+  function setM(d) {
+    var m = Math.min(7, Math.max(1, getMeta() + d));
+    try { localStorage.setItem("pasos-meta", String(m)); } catch (e) {}
+    val.textContent = m + " días por semana";
+  }
+  setM(0);
+  mn.onclick = function () { setM(-1); }; pl.onclick = function () { setM(1); };
+  row.appendChild(mn); row.appendChild(val); row.appendChild(pl);
+  c2.appendChild(row);
+  app.appendChild(c2);
+  var c3 = el("div", "card"), tb = el("button", "newb", "Cambiar tema");
+  c3.appendChild(el("h3", null, "Apariencia"));
+  tb.style.marginBottom = "0";
+  tb.onclick = openThemes;
+  c3.appendChild(tb);
+  app.appendChild(c3);
+  var c4 = el("div", "card"), tot = allSteps().filter(function (s) { return s.done; }).length;
+  c4.appendChild(el("h3", null, "Tus datos"));
+  c4.appendChild(el("p", null, goals.length + " objetivos · " + tot + " pasos completados. Se guardan solo en este navegador."));
+  var eb2 = el("button", "newb", "Exportar copia de seguridad"), ib2 = el("button", "newb", "Importar copia"), fi = document.createElement("input");
+  eb2.style.marginBottom = "10px"; ib2.style.marginBottom = "10px";
+  eb2.onclick = async function () {
+    var json = JSON.stringify({ app: "pasos", v: 2, goals: goals }, null, 2), dl = null;
+    try { if (typeof claude !== "undefined") dl = await claude.use("downloads"); } catch (e) {}
+    try {
+      if (dl) await dl.save({ filename: "paso-a-paso-copia.json", data: json });
+      else {
+        var a = document.createElement("a");
+        a.href = URL.createObjectURL(new Blob([json], { type: "application/json" }));
+        a.download = "paso-a-paso-copia.json";
+        document.body.appendChild(a); a.click(); a.remove();
+        setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
+      }
+    } catch (e) { toast("No se guardó la copia"); }
+  };
+  fi.type = "file"; fi.accept = ".json,application/json"; fi.style.display = "none";
+  fi.onchange = function () {
+    var f = fi.files && fi.files[0];
+    if (!f) return;
+    var rd = new FileReader(), rx = /^\d{4}-\d{2}-\d{2}$/;
+    rd.onload = function () {
+      try {
+        var o = JSON.parse(String(rd.result));
+        if (!o || !Array.isArray(o.goals)) throw new Error("formato");
+        var imp = o.goals.filter(function (g) { return g && typeof g.text === "string" && Array.isArray(g.steps); }).map(function (g) {
+          return {
+            id: "g" + Date.now() + Math.random().toString(36).slice(2, 6), text: g.text.slice(0, 140),
+            nivel: ["Ligero", "Medio", "Intenso"].indexOf(g.nivel) > -1 ? g.nivel : "Medio",
+            due: rx.test(g.due || "") ? g.due : null,
+            steps: g.steps.filter(function (s) { return s && typeof s.t === "string"; }).map(function (s) { return { t: s.t.slice(0, 200), done: !!s.done, doneAt: rx.test(s.doneAt || "") ? s.doneAt : null }; })
+          };
+        });
+        if (!imp.length) throw new Error("vacío");
+        goals = imp.concat(goals); save(); render(); toast("Copia importada: " + imp.length + " objetivos");
+      } catch (e) { toast("Archivo no válido"); }
+    };
+    rd.readAsText(f);
+  };
+  ib2.onclick = function () { fi.click(); };
+  c4.appendChild(eb2); c4.appendChild(ib2); c4.appendChild(fi);
+  var rs = el("button", "dng", "Borrar todos mis datos");
+  rs.onclick = function () { if (confirm("¿Borrar todos tus objetivos y progreso?")) { goals = []; save(); view = "home"; render(); } };
+  c4.appendChild(rs);
+  app.appendChild(c4);
+}
+function openThemes() {
+  var o = el("div", "tm"), sh = el("div", "sheet"), tw = el("div", "tw");
+  sh.appendChild(el("h2", null, "Elige tu tema"));
+  sh.appendChild(el("p", null, "Cambia los colores de la app cuando quieras."));
+  function paint() {
+    tw.textContent = "";
+    var now = document.documentElement.getAttribute("data-theme");
+    THEMES.forEach(function (t) {
+      var b = el("button", "sw" + (now === t[0] ? " on" : "")), sp = el("span"), i1 = el("i"), i2 = el("i");
+      b.type = "button";
+      i1.style.background = t[2]; i2.style.background = t[0] === "custom" ? getCustom().accent : t[3];
+      sp.appendChild(i1); sp.appendChild(i2);
+      b.appendChild(sp); b.appendChild(document.createTextNode(t[1]));
+      b.onclick = function () { setTheme(t[0]); paint(); };
+      tw.appendChild(b);
+    });
+  }
+  paint();
+  sh.appendChild(tw);
+  var pn = el("div", "cust"), cuBox = el("div");
+  pn.appendChild(el("h3", null, "Personalizar"));
+  pn.appendChild(cuBox);
+  function saveCu(p) { putCu(p); setTheme("custom"); paint(); drawCu(); }
+  function drawCu() {
+    cuBox.textContent = "";
+    var cu = getCustom(), mr = el("div", "times"), cr = el("div", "cols");
+    cuBox.appendChild(el("small", null, "Modo"));
+    [["dark", "Oscuro"], ["light", "Claro"]].forEach(function (m) {
+      var b = el("button", cu.mode === m[0] ? "on" : "", m[1]);
+      b.type = "button";
+      b.onclick = function () { saveCu({ mode: m[0] }); };
+      mr.appendChild(b);
+    });
+    cuBox.appendChild(mr);
+    cuBox.appendChild(el("small", null, "Color de acento"));
+    ["#ffd60a", "#ff9500", "#ff453a", "#ff2d92", "#bf5af2", "#0a84ff", "#30d158", "#64d2ff"].forEach(function (h) {
+      var b = el("button", cu.accent.toLowerCase() === h ? "on" : "");
+      b.type = "button"; b.style.background = h; b.setAttribute("aria-label", "Color " + h);
+      b.onclick = function () { saveCu({ accent: h }); };
+      cr.appendChild(b);
+    });
+    var pk = document.createElement("input");
+    pk.type = "color"; pk.value = cu.accent; pk.setAttribute("aria-label", "Elegir otro color");
+    pk.onchange = function () { saveCu({ accent: pk.value }); };
+    cr.appendChild(pk);
+    cuBox.appendChild(cr);
+    cuBox.appendChild(el("small", null, "Redondeo de las tarjetas"));
+    var rg = document.createElement("input");
+    rg.type = "range"; rg.min = 8; rg.max = 40; rg.value = cu.radius; rg.setAttribute("aria-label", "Redondeo");
+    rg.oninput = function () { putCu({ radius: +rg.value }); document.documentElement.style.setProperty("--r", rg.value + "px"); };
+    cuBox.appendChild(rg);
+  }
+  drawCu();
+  sh.appendChild(pn);
+  var ok = el("button", "go", "Listo");
+  ok.onclick = function () { o.remove(); };
+  sh.appendChild(ok);
+  o.appendChild(sh);
+  o.addEventListener("click", function (e) { if (e.target === o) o.remove(); });
+  document.body.appendChild(o);
+}
+function toast(m) {
+  var t = el("div", "toast", m);
+  t.setAttribute("role", "status");
+  document.body.appendChild(t);
+  setTimeout(function () { t.remove(); }, 1700);
+}
+function ach() {
+  var c = counts(), n = allSteps().filter(function (s) { return s.done; }).length, d = Object.keys(c).length;
+  var gd = goals.filter(function (g) { return g.steps.length && pct(g) === 100; }).length;
+  return [
+    { n: "Primer paso", d: "Completa un paso", i: "★", ok: n >= 1 },
+    { n: "En marcha", d: "Completa 10 pasos", i: "▲", ok: n >= 10 },
+    { n: "Constancia", d: "Avanza en 3 días distintos", i: "◆", ok: d >= 3 },
+    { n: "Objetivo cumplido", d: "Termina un objetivo", i: "✔", ok: gd >= 1 },
+    { n: "Varios objetivos", d: "Termina 3 objetivos", i: "✦", ok: gd >= 3 }
+  ];
+}
+function celebrate(g) {
+  var o = el("div", "cel"), cols = ["#b6f26b", "#ffbe5c", "#b8a4ff", "#ff9ef0", "#a8c9ff"];
+  o.setAttribute("role", "dialog");
+  for (var i = 0; i < 28; i++) {
+    var f = el("span", "cf");
+    f.style.left = Math.random() * 100 + "%";
+    f.style.background = cols[i % 5];
+    f.style.animationDelay = Math.random() * 0.5 + "s";
+    o.appendChild(f);
+  }
+  o.appendChild(el("h2", null, "¡Objetivo completado!"));
+  o.appendChild(el("p", null, g.text));
+  var b = el("button", null, "Volver al inicio");
+  b.onclick = function () { o.remove(); view = "home"; render(); };
+  o.appendChild(b);
+  document.body.appendChild(o);
+  b.focus();
+}
+function homeMsg(done, c) {
+  if (!goals.length) return "Hoy puedes empezar algo que tu yo del futuro agradecerá";
+  if (goals.every(function (g) { return pct(g) === 100; })) return "Lo lograste. Date un momento para reconocer tu progreso";
+  if (c[dk()]) return "¡Buen trabajo! Hoy ya avanzaste hacia tus objetivos";
+  if (goals.some(function (g) { var p = pct(g); return p > 0 && p < 100; })) return "¿Continuamos con tu siguiente paso?";
+  return "No necesitas hacerlo todo hoy. Solo da el siguiente paso";
+}
+function render() {
+  var app = $("app");
+  app.textContent = "";
+  var chg = window.__lv !== view;
+  app.className = chg ? "anim" : "";
+  window.__lv = view;
+  if (view !== "detail") { editing = false; gs.gid = null; }
+  clearInterval(gtick);
+  if (view === "detail") detail(app); else if (view === "stats") stats(app); else if (view === "goals") goalsView(app); else if (view === "profile") profile(app); else home(app);
+  $("nh").className = (view === "home" || view === "stats") ? "on" : "";
+  $("nn").className = (view === "goals" || view === "detail") ? "on" : "";
+  $("np").className = view === "profile" ? "on" : "";
+  ["nh", "nn", "np"].forEach(function (k) { if ($(k).className === "on") $(k).setAttribute("aria-current", "page"); else $(k).removeAttribute("aria-current"); });
+  
+  if (chg) window.scrollTo(0, 0);
+}
+var lastFocus = null;
+function openModal() { lastFocus = document.activeElement; $("modal").classList.add("open"); $("msg").textContent = ""; setTimeout(function () { $("in").focus(); }, 50); }
+function closeModal() { $("modal").classList.remove("open"); if (lastFocus && lastFocus.focus) lastFocus.focus(); }
+function parse(txt) {
+  var c = String(txt).replace(/```json|```/g, "").trim();
+  return JSON.parse(c.slice(c.indexOf("{"), c.lastIndexOf("}") + 1));
+}
+async function create() {
+  var text = $("in").value.trim();
+  if (!text || busy) return;
+  busy = true; $("btn").disabled = true;
+  $("msg").textContent = "Pensando tu plan…";
+  try {
+    var prompt = "Eres un coach práctico. El usuario tiene este objetivo: \"" + text + "\".\n" +
+      "Crea un plan de 5 a 8 pasos concretos, cortos y accionables, en orden, en español y en tono directo " +
+      "(por ejemplo, para terminar una tarea: 'Apaga el celular y cierra las pestañas que no necesites'). " +
+      "Cada paso debe poder hacerse y marcarse como completado. Ordénalos del más sencillo al más exigente. Evita frases vagas como 'esfuérzate' o 'sé disciplinado'. Divide lo grande en acciones pequeñas. No prometas resultados ni inventes datos sobre el usuario. Elige el nivel de esfuerzo (Ligero, Medio o Intenso) según el objetivo; más difícil no significa mejor." + (tmin ? " La persona puede dedicarle unos " + tmin + " minutos por sesión: ajusta el tamaño de los pasos." : "") + "\n" +
+      "Responde SOLO con JSON, sin texto extra ni backticks: {\"nivel\":\"Medio\",\"pasos\":[\"paso 1\",\"paso 2\"]}";
+    var data = parse(await aiText(prompt));
+    var steps = (Array.isArray(data.pasos) ? data.pasos : []).filter(function (p) { return typeof p === "string" && p.trim(); }).slice(0, 8).map(function (p) { return { t: p.trim(), done: false, doneAt: null }; });
+    if (steps.length < 3) throw new Error("vacío");
+    var g = { id: "g" + Date.now(), text: text, nivel: ["Ligero", "Medio", "Intenso"].indexOf(data.nivel) > -1 ? data.nivel : "Medio", steps: steps };
+    goals.unshift(g);
+    save();
+    $("in").value = ""; closeModal();
+    cur = g.id; view = "detail"; render();
+  } catch (e) {
+    $("msg").textContent = (e && e.code === "need_login") ? "Inicia sesión para crear tu plan con IA." :
+      (e && e.code === "limit") ? "Llegaste al límite gratis de esta semana. Pronto tendrás el plan Pro." :
+      (e && e.code === "rate_limited") ? "Demasiadas peticiones, espera un momento." :
+      (e && e.code === "not_granted") ? "Necesitas permitir el acceso a la IA para crear planes." :
+      "No pude crear el plan. Intenta de nuevo.";
+  } finally {
+    busy = false; $("btn").disabled = false;
+  }
+}
+[5, 15, 30, 60].forEach(function (m) {
+  var b = el("button", null, m + " min");
+  b.type = "button";
+  b.onclick = function () {
+    tmin = tmin === m ? null : m;
+    Array.prototype.forEach.call($("times").children, function (x) { x.className = ""; });
+    if (tmin) b.className = "on";
+  };
+  $("times").appendChild(b);
+});
+$("btn").onclick = create;
+$("in").addEventListener("keydown", function (e) { if (e.key === "Enter") create(); });
+$("nn").onclick = function () { view = "goals"; render(); };
+$("nh").onclick = function () { view = "home"; render(); };
+$("np").onclick = function () { view = "profile"; render(); };
+$("modal").addEventListener("click", function (e) { if (e.target === $("modal")) closeModal(); });
+var th0 = null;
+try { th0 = localStorage.getItem("pasos-theme"); } catch (e) {}
+document.documentElement.setAttribute("data-theme", ["yellow", "light", "green", "lilac", "custom"].indexOf(th0) > -1 ? th0 : "yellow");
+applyTheme(document.documentElement.getAttribute("data-theme"));
+var SPQ = ["Un paso pequeño hoy es mejor que ninguno.", "No tienes que hacerlo todo, solo el siguiente paso.", "Avanzar despacio sigue siendo avanzar.", "Lo que haces hoy construye lo que serás mañana.", "Empieza donde estás, con lo que tienes.", "Cada paso cuenta, también los pequeños.", "Hoy es un buen día para dar el primer paso.", "La constancia pesa más que la perfección.", "Respira. Un paso a la vez.", "Tú decides cuándo empezar: ahora es un buen momento."];
+function boot() {
+  var sp = $("splash"), bar = $("spbar"), q = $("sq");
+  if (!sp) return;
+  q.textContent = SPQ[Math.floor(Math.random() * SPQ.length)];
+  var t0 = Date.now(), pr = 0;
+  function set(p) { pr = Math.max(pr, p); bar.style.width = pr + "%"; }
+  function wait(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
+  setTimeout(function () { var s = $("splash"); if (s) s.remove(); }, 6000);
+  setTimeout(function () { set(25); }, 100);
+  var fonts = Promise.race([document.fonts ? document.fonts.ready : Promise.resolve(), wait(2500)]).then(function () { set(60); }, function () { set(60); });
+  var ai = Promise.race([Promise.resolve().then(function () { return typeof claude !== "undefined" ? claude.use("sample") : null; }), wait(2500)]).catch(function () { return null; }).then(function () { set(90); });
+  Promise.all([fonts, ai]).then(function () {
+    setTimeout(function () {
+      set(100);
+      setTimeout(function () {
+        sp.classList.add("out");
+        setTimeout(function () { sp.remove(); }, 600);
+      }, 250);
+    }, Math.max(0, 1800 - (Date.now() - t0)));
+  });
+}
+// Teclado: Escape cierra la capa superior y Tab queda dentro de ella
+document.addEventListener("keydown", function (e) {
+  var layers = document.querySelectorAll(".cel, .tm, #modal.open, #amodal.open"), top = layers[layers.length - 1];
+  if (!top) return;
+  if (e.key === "Escape") {
+    var c = top.querySelector(".fclose") || top.querySelector(".go");
+    if (top.id === "amodal") closeAuth(); else if (top.id === "modal") closeModal(); else if (top.classList.contains("tm")) top.remove(); else if (c && top.querySelector(".fclose")) c.click();
+    return;
+  }
+  if (e.key !== "Tab") return;
+  var f = top.querySelectorAll("button, input, [href]"), a = f[0], z = f[f.length - 1];
+  if (!f.length) return;
+  if (e.shiftKey && document.activeElement === a) { e.preventDefault(); z.focus(); }
+  else if (!e.shiftKey && document.activeElement === z) { e.preventDefault(); a.focus(); }
+});
+// ---- Login ----
+var authMode = "in";
+function openAuth() { $("amodal").classList.add("open"); $("aem").textContent = ""; setTimeout(function () { $("aemail").focus(); }, 50); }
+function closeAuth() { $("amodal").classList.remove("open"); }
+function authUI() {
+  $("amt").textContent = authMode === "in" ? "Inicia sesión" : "Crea tu cuenta";
+  $("abtn").textContent = authMode === "in" ? "Entrar" : "Crear cuenta";
+  $("aalt").textContent = authMode === "in" ? "¿No tienes cuenta? Crear una" : "¿Ya tienes cuenta? Entrar";
+}
+$("aalt").onclick = function () { authMode = authMode === "in" ? "up" : "in"; authUI(); };
+$("aclose").onclick = closeAuth;
+$("abtn").onclick = async function () {
+  var em = $("aemail").value.trim(), pw = $("apass").value;
+  if (!em || pw.length < 6) { $("aem").textContent = "Escribe tu correo y una contraseña de 6 o más caracteres."; return; }
+  if (!window.PasoAuth) { $("aem").textContent = "Cargando, intenta de nuevo en un momento."; return; }
+  $("abtn").disabled = true; $("aem").textContent = "…";
+  var r = authMode === "in" ? await window.PasoAuth.signIn(em, pw) : await window.PasoAuth.signUp(em, pw);
+  $("abtn").disabled = false;
+  if (r.error) { $("aem").textContent = r.error.message; return; }
+  if (authMode === "up" && !(r.data && r.data.session)) { $("aem").textContent = "Revisa tu correo para confirmar la cuenta y luego entra."; return; }
+  closeAuth(); toast("Sesión iniciada");
+};
+authUI();
+load(); render(); boot();
+setInterval(checkAlarm, 4000);
+document.addEventListener("visibilitychange", checkAlarm);
+document.addEventListener("click", unlockAudio, { once: true });
+checkAlarm();
+</script>
+<script type="module">
+import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
+var SB_URL = "https://wdvconydijxwjiyglttb.supabase.co", SB_KEY = "sb_publishable_JL5d1DNPLq2Z7A1PwJ7vXw_DKqzdYDg";
+var sb = createClient(SB_URL, SB_KEY);
+window.PasoAuth = {
+  token: async function () { var r = await sb.auth.getSession(); return r.data.session ? r.data.session.access_token : null; },
+  signIn: function (e, p) { return sb.auth.signInWithPassword({ email: e, password: p }); },
+  signUp: function (e, p) { return sb.auth.signUp({ email: e, password: p }); },
+  signOut: function () { return sb.auth.signOut(); }
+};
+</script>
+</body>
+</html>
